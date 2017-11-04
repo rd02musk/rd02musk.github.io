@@ -1,0 +1,86 @@
+<html>
+<head>
+<script src="jquery-2.0.3.min.js" language="javascript"></script>
+<script src="/socket.io/socket.io.js"></script>
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0;" />
+<script>
+
+//------ Define your variables here
+var socket = io.connect(window.location.hostname+':8080');
+var nIntervId;
+ 
+
+// This function is called when the page 1st loads on your phone
+//
+$(function()
+{
+    //send data to the pi at 20Hz
+    nIntervId = setInterval(SendToPi ,50);
+ 
+    window.gyro = 'ready';
+    alert('Ready -- Lets race !');
+  
+});
+
+
+// This fuction is called @ 20Hz
+//
+function SendToPi()
+{
+    	if (window.gyro == 'ready')  
+   	{ 
+		//dont send another command until last one doone... its only a little pi
+		window.gyro = 'notready';
+		socket.emit('fromclient', { alpha: alpha, beta: beta, gamma: gamma } );
+		//socket.emit('fromclient', { x: x, y: y, z: z } );
+		window.gyro = 'ready';
+    }     //END if
+
+}   //End SendToPI
+
+
+
+// This fuction is called when the phone orientation changes
+//
+window.ondeviceorientation = function(event) 
+{
+    	// orientate
+		alpha = event.alpha ;
+		
+		//steer
+		beta = event.beta ;
+    	
+    	// throttle...
+		gamma = event.gamma;
+		
+}     //END ondviceorientation
+
+
+/*
+// This fuction is called when the phone oriacceleration changes
+//
+window.ondevicemotion = function(event) 
+{
+    	// orientate
+		x = event.x ;
+		
+		//steer
+		y = event.y ;
+    	
+    	// throttle...
+		z = event.z;
+		
+}     //END ondviceoriacceleraton
+
+*/
+
+</script>
+<body bgcolor="teal"> 
+</head><body>
+
+ <div id=info><font size=7><pre></pre>picar</pre></font></div>
+ <div id=info><font size=3><pre></pre>https://github.com/lawsonkeith/picar</pre></font></div>
+ 
+ </body>
+ </head>
+</html>
